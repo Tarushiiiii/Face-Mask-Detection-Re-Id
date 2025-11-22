@@ -8,10 +8,11 @@ class Trainer:
         self.criterion = criterion
         self.device = device
 
-    def train_one_epoch(self):
+    def train_one_epoch(self, return_batches=False):
         self.model.train()
         total_loss = 0.0
         n = 0
+
         for imgs, labels, _cams in self.dataloader:
             imgs = imgs.to(self.device)
             labels = labels.to(self.device)
@@ -26,4 +27,9 @@ class Trainer:
             total_loss += loss.item() * imgs.size(0)
             n += imgs.size(0)
 
-        return total_loss / n if n > 0 else 0.0
+            if return_batches:
+                yield loss.item()   # batch-level loss for tqdm
+
+        if not return_batches:
+            return total_loss / n if n > 0 else 0.0
+
