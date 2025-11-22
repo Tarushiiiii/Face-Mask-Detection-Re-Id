@@ -1,4 +1,4 @@
-DATA_DIR = "datasets/re-id/Market-1501"
+DATA_DIR = "../../dataset/re-id/Market-1501-v15.09.15"
 BATCH_SIZE = 32
 LR = 3e-4
 EPOCHS = 50

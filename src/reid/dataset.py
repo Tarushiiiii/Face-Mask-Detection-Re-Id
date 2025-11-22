@@ -28,7 +28,7 @@ class Market1501(Dataset):
             if not fname.lower().endswith((".jpg", ".png")):
                 continue
             pid = int(fname.split("_")[0])
-            cam = int(fname.split("c")[1].split("_")[0])
+            cam = int(fname.split("c")[1][0])
             self.img_paths.append(os.path.join(img_dir, fname))
             self.pids.append(pid)
             self.cam_ids.append(cam)
