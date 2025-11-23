@@ -1,90 +1,102 @@
 import cv2
 import os
-import torch
 import numpy as np
-from inference import load_model_for_inference, extract_embedding
 from scipy.spatial.distance import cosine
+from inference import load_model_for_inference, extract_embedding
 
 # ---------------------------------------------------------------
 # CONFIG
 # ---------------------------------------------------------------
-MODEL_PATH = "output/finetuned_model.pth"
-GALLERY_DIR = "output"          # your .npy gallery embeddings
-NUM_CLASSES = 4                 # adjust based on your training
-THRESHOLD = 0.45                # lower = stricter matching
+MODEL_PATH = "src/reid/output/finetuned_model.pth"
+GALLERY_DIR = "src/reid/output"      
+NUM_CLASSES = 4
+THRESHOLD = 0.55
+PERSON_SIZE = (128, 256) 
 # ---------------------------------------------------------------
 
-
-# Load ReID model
+print("\n[INFO] Loading model...\n")
 model, device, _, _ = load_model_for_inference(
     MODEL_PATH,
     model_ctor_kwargs={"num_classes": NUM_CLASSES}
 )
 
-# Load gallery embeddings
+# ---------------------------------------------------------------
+# LOAD GALLERY EMBEDDINGS
+# ---------------------------------------------------------------
 gallery = {}
+name_map = {}   # <-- store clean display names
+
 for fname in os.listdir(GALLERY_DIR):
-    if fname.endswith(".npy"):
-        person_id = fname.replace(".npy", "")
+    if fname.endswith(".npy") and "emb" not in fname:
+        pid = fname.replace(".npy", "")
+        
+        # convert person_01 → Person 01
+        pretty = pid.replace("person_", "Person ").replace("_", " ")
+
+        name_map[pid] = pretty
+        
         emb = np.load(os.path.join(GALLERY_DIR, fname))
-        gallery[person_id] = emb
+        gallery[pid] = emb
+
+print("Gallery IDs Loaded:", name_map, "\n")
 
 if len(gallery) == 0:
-    print("⚠ No gallery embeddings found in output/*.npy")
-    exit()
+    raise Exception("❌ Gallery empty!")
 
-print("Loaded Gallery IDs:", list(gallery.keys()))
-
-# Initialize HOG person detector
+# ---------------------------------------------------------------
+# HOG PERSON DETECTOR
+# ---------------------------------------------------------------
 hog = cv2.HOGDescriptor()
 hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
 cap = cv2.VideoCapture(0)
+print("[INFO] Starting ReID Live Stream... Press Q to exit.\n")
 
-print("\n[INFO] Starting Re-ID webcam... press Q to quit.\n")
-
+# ---------------------------------------------------------------
+# MAIN LOOP
+# ---------------------------------------------------------------
 while True:
     ret, frame = cap.read()
     if not ret:
-        break
+        continue
 
-    # Detect people (full-body)
     boxes, weights = hog.detectMultiScale(frame, winStride=(8, 8))
 
     for (x, y, w, h) in boxes:
-        # Crop person
-        person = frame[y:y+h, x:x+w]
-        if person.size == 0:
+        crop = frame[y:y+h, x:x+w]
+        if crop.size == 0:
             continue
 
-        # Save temporary crop
-        tmp_path = "temp_person.jpg"
-        cv2.imwrite(tmp_path, person)
+        crop_resized = cv2.resize(crop, PERSON_SIZE)
+        temp_path = "temp_crop.jpg"
+        cv2.imwrite(temp_path, crop_resized)
 
-        # Extract embedding
-        emb = extract_embedding(model, device, tmp_path)
+        emb = extract_embedding(model, device, temp_path)
 
-        # Match with gallery
         best_id = "Unknown"
-        best_score = 10  # large distance = bad
+        best_score = 999
 
         for pid, g_emb in gallery.items():
             dist = cosine(emb, g_emb)
+
             if dist < best_score:
                 best_score = dist
                 best_id = pid
 
-        label = f"{best_id} ({best_score:.2f})"
-        color = (0, 255, 0) if best_score < THRESHOLD else (0, 0, 255)
-        if best_score >= THRESHOLD:
-            label = "Unknown"
+        # Decide label
+        if best_score > THRESHOLD:
+            label = f"Unknown ({best_score:.2f})"
+            display_name = "Unknown"
+            color = (0, 0, 255)
+        else:
+            display_name = name_map[best_id]   # <-- CLEAN NAME
+            label = f"{display_name} ({best_score:.2f})"
+            color = (0, 255, 0)
 
-        # Draw bounding box
-        cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-        cv2.putText(
-            frame, label, (x, y - 10),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2
-        )
+        # Draw on frame
+        cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
+        cv2.putText(frame, label, (x, y - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
     cv2.imshow("ReID Live", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
