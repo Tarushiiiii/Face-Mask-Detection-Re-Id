@@ -26,7 +26,7 @@ INIT_LR = 1e-4
 EPOCHS = 20
 BS = 32
 
-DIRECTORY = r"C:\Users\agarw\OneDrive\Desktop\Face-Mask-Detection-Re-Id\dataset"
+DIRECTORY = r"C:\Users\agarw\OneDrive\Desktop\Face-Mask-Detection-Re-Id\dataset\face-mask"
 CATEGORIES = ["with_mask", "without_mask"]
 
 # grab the list of images in our dataset directory, then initialize
