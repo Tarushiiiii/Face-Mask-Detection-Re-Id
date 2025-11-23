@@ -18,7 +18,7 @@ elif args.task == "reid":
     script = os.path.join(ROOT, "src", "reid", "demo_reid.py")
 
     model_path = os.path.join(ROOT, "src", "reid", "output", "finetuned_model.pth")
-    image_path = os.path.join(ROOT, "examples", "example_03.jpg")
+    image_path = os.path.join(ROOT, "examples", "example_02.png")
 
     subprocess.run([
         python_exec,
