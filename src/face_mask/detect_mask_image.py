@@ -14,8 +14,12 @@ ap.add_argument("-i", "--image", required=True,
 args = vars(ap.parse_args())
 
 # load our serialized face detector model from disk
-prototxtPath = r"face_detector/deploy.prototxt"
-weightsPath = r"face_detector/res10_300x300_ssd_iter_140000.caffemodel"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FACE_DET_DIR = os.path.join(BASE_DIR, "face_detector")
+
+prototxtPath = os.path.join(FACE_DET_DIR, "deploy.prototxt")
+weightsPath = os.path.join(FACE_DET_DIR, "res10_300x300_ssd_iter_140000.caffemodel")
+
 faceNet = cv2.dnn.readNet(prototxtPath, weightsPath)
 
 # load the face mask detector model from disk
