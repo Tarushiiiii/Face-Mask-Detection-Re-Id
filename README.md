@@ -91,16 +91,44 @@ python reid/inference.py --image examples/person.jpg
 
 FACE-MASK-DETECTION-RE-ID/
 │
-├── face_mask/
-├── reid/
 ├── dataset/
+│   ├── face-mask/
+│   └── re-id/
+│
 ├── examples/
+├── output/
+│
+├── src/
+│   ├── face_mask/
+│   │   ├── face_detector/
+│   │   ├── detect_mask_image.py
+│   │   ├── detect_mask_video.py
+│   │   ├── mask_detector.model
+│   │   └── train_mask_detector.py
+│   │
+│   ├── reid/
+│       ├── gallery/
+│       ├── output/
+│       ├── config.py
+│       ├── dataset.py
+│       ├── demo_reid.py
+│       ├── evaluate.py
+│       ├── inference.py
+│       ├── manual_match.py
+│       ├── match.py
+│       ├── model.py
+│       ├── train.py
+│       ├── trainer.py
+│       └── utils.py
+│
+├── venv/
+├── run.py
 ├── requirements.txt
 └── README.md
 
 # Installation
 
-## 1. Create virtual environment (optional)
+## 1. Create virtual environment
 
 ```bash
 python -m venv venv
