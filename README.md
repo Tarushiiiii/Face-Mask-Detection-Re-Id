@@ -27,7 +27,7 @@ A deep-learning system that detects faces from images/video streams and classifi
 
 face_mask/
 │
-├── face_detector
+├── face_detector/
 ├── train_mask_detector.py
 ├── detect_mask_image.py
 ├── detect_mask_video.py
@@ -65,14 +65,18 @@ The system extracts **unique person embeddings** and evaluates performance using
 ## Re-ID Module Structure
 
 reid/
-│
+├── gallery/
+├── output/
 ├── config.py
 ├── dataset.py
-├── model.py
-├── trainer.py
-├── train.py
-├── inference.py
+├── demo_reid.py
 ├── evaluate.py
+├── inference.py
+├── manual_match.py
+├── match.py
+├── model.py
+├── train.py
+├── trainer.py
 └── utils.py
 
 ## Running Re-ID Training
@@ -87,7 +91,7 @@ python reid/train.py
 python reid/inference.py --image examples/person.jpg
 ```
 
-# Project Structure (Overall)
+# Project Structure
 
 FACE-MASK-DETECTION-RE-ID/
 │
@@ -141,9 +145,25 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## 3. Running the Project Using run.py
+
+### A. To run Face Mask Detection Pipeline
+
+```bash
+python run.py --task mask
+```
+
+### B. To run Person Re-Identification Pipeline
+
+```bash
+python run.py --task reid
+```
+
 # Future Improvements
 
-- Integrate YOLOv8 for end-to-end person detection
-- Add DeepSORT for real-time person tracking
-- Deploy using Flask/FastAPI
-- Add GUI for combined face-mask + re-ID system
+- Mobile app dashboard for alerts
+- Integration with cloud-based monitoring
+- Use YOLOv8 for faster detection
+- Multi-camera cross-location Re-ID
+- Adding audio alerts and entry control automation
+
