@@ -15,16 +15,14 @@ if args.task == "mask":
     subprocess.run([python_exec, script])
 
 elif args.task == "reid":
-    script = os.path.join(ROOT, "src", "reid", "inference.py")
-    
-    # <<< CHANGE THESE 2 LINES AS PER YOUR EXACT PATHS >>>
+    script = os.path.join(ROOT, "src", "reid", "demo_reid.py")
+
     model_path = os.path.join(ROOT, "src", "reid", "output", "finetuned_model.pth")
-    image_path = os.path.join(ROOT, "examples", "example_01.png")
+    image_path = os.path.join(ROOT, "examples", "example_03.jpg")
 
     subprocess.run([
-        python_exec, 
+        python_exec,
         script,
         "--model-path", model_path,
-        "--image", image_path,
-        "--num-classes", "4"
+        "--image", image_path
     ])
