@@ -25,6 +25,7 @@ A deep-learning system that detects faces from images/video streams and classifi
 
 ## Face Mask Module Structure
 
+```
 face_mask/
 │
 ├── face_detector/
@@ -33,6 +34,7 @@ face_mask/
 ├── detect_mask_video.py
 ├── mask_detector.model
 └── plot.png
+```
 
 ## Running Face Mask Detection
 
@@ -64,6 +66,7 @@ The system extracts **unique person embeddings** and evaluates performance using
 
 ## Re-ID Module Structure
 
+```
 reid/
 ├── gallery/
 ├── output/
@@ -78,6 +81,7 @@ reid/
 ├── train.py
 ├── trainer.py
 └── utils.py
+```
 
 ## Running Re-ID Training
 
@@ -92,7 +96,7 @@ python reid/inference.py --image examples/person.jpg
 ```
 
 # Project Structure
-
+```
 FACE-MASK-DETECTION-RE-ID/
 │
 ├── dataset/
@@ -129,7 +133,7 @@ FACE-MASK-DETECTION-RE-ID/
 ├── run.py
 ├── requirements.txt
 └── README.md
-
+```
 # Installation
 
 ## 1. Create virtual environment
